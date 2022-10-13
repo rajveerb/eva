@@ -92,16 +92,10 @@ class CarFilter(PytorchAbstractClassifierUDF):
         for prediction in predictions:
             probabilities = torch.nn.functional.softmax(prediction,dim=0)
             pred_score = tuple(probabilities.cpu().detach().numpy())
+            pred_class = ['car','not_car']            
             print(pred_score)
-            car_pred = pred_score[0]
-            not_car_pred = pred_score[1]
-            if(car_pred>not_car_pred):
-                pred_class = [str(self.labels[0])]
-            else:
-                pred_class = [str(self.labels[1])]
-
-            valid_pred = [0 if car_pred > self.threshold else 1]
-
+            valid_pred = [pred_score.index(x) for x in pred_score if x > .6]
+            print(valid_pred)
             if valid_pred:
                 pred_t = valid_pred[-1]
             else:
@@ -116,4 +110,5 @@ class CarFilter(PytorchAbstractClassifierUDF):
                 {"labels": pred_class, "scores": pred_score},
                 ignore_index=True,
             )
+            print(outcome)
         return outcome
