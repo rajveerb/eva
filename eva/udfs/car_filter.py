@@ -55,7 +55,7 @@ class CarFilter(PytorchAbstractClassifierUDF):
         self.model = torch.nn.DataParallel(self.model).cuda()
         device = torch.device('cpu')
         # @Rajveer hard coded path
-        checkpoint = torch.load('/nethome/gkakkar7/rbachkaniwala3/dev_rajveer/model_best.pth.tar',map_location=device)
+        checkpoint = torch.load('/nethome/gkakkar7/rbachkaniwala3/dev_rajveer/saved_models/model_best.pth.tar',map_location=device)
         self.model.load_state_dict(checkpoint['state_dict'])
         self.model.eval()
 
