@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import List
-
+import yolov5
 import numpy as np
 import pandas as pd
 
@@ -53,7 +53,7 @@ class YoloV5(PytorchAbstractClassifierUDF):
     def __init__(self, threshold=0.85):
         super().__init__()
         self.threshold = threshold
-        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s',force_reload=True)
+        self.model = yolov5.load('yolov5s.pt')
         self.model.eval()
 
     @property
@@ -169,11 +169,13 @@ class YoloV5(PytorchAbstractClassifierUDF):
             predicted_scores (List[List[float]])
 
         """
-        predictions = self.model(frames)
-        print(predictions)
+        # Cast hacky fix
+        transform = torchvision.transforms.ToPILImage()
+        img = transform(frames[0])
+        predictions = self.model(img)
         outcome = pd.DataFrame()
         predictions = predictions.pandas().xyxy        
-        print('$$$$$$$$here2')
+        
         for prediction in predictions:
             pred_class = prediction['class'].tolist()
             pred_boxes = [
@@ -195,5 +197,4 @@ class YoloV5(PytorchAbstractClassifierUDF):
                 {"labels": pred_class, "scores": pred_score, "bboxes": pred_boxes},
                 ignore_index=True,
             )
-            print(outcome)
         return outcome
