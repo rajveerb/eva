@@ -28,14 +28,15 @@ sys.path.append(EVA_CODE_DIR)
 from eva.server.interpreter import start_cmd_client  # noqa: E402
 
 
-def eva_client(host="0.0.0.0", port=5432):
+def eva_client(host="0.0.0.0", port=5436):
     """
     Start the eva system
     """
 
     # Launch server
     try:
-        start_cmd_client(host=host, port=port)
+        print(5436)
+        start_cmd_client(host=host, port=5436)
     except Exception as e:
         logger.critical(e)
 
